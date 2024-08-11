@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print the Deadline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #controls {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #gridContainer {
+            display: grid;
+            gap: 0px;
+            background-color: #ddd;
+            border: 1px solid #ddd;
+            /* width: 200mm; */
+            margin: 0 auto;
+        }
+        .grid-item {
+            background-color: white;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            border: 1px solid #251e1e;
+        }
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        @media print {
+            #controls, button, footer {
+                display: none;
+            }
+            body {
+                padding: 0;
+            }
+            @page {
+                size: A4;
+                margin: 10mm 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <div class="form-group">
+            <label for="daysInput">Number of days:</label>
+            <input type="number" id="daysInput" min="1" value="25">
+        </div>
+        <div class="form-group">
+            <label for="columnsInput">Number of columns (5-30):</label>
+            <input type="number" id="columnsInput" min="5" max="30" value="20">
+        </div>
+        <button onclick="generateGrid()">Generate Grid</button>
+        <button onclick="window.print()">Print Grid</button>
+        <button onclick="goToDayCounter()">Go to Day Counter</button>
+    </div>
+    <div id="gridContainer"></div>
+    <footer>
+        Made by <a href="https://instagram.com/rsk_2002" target="_blank">rsk</a>
+    </footer>
+
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+            days: params.get('days')
+            };
+        }
+
+        // Set the input value if the 'days' parameter exists
+        const input = document.getElementById('daysInput');
+        const params = getQueryParams();
+        
+        if (params.days) {
+            input.value = params.days;
+        }
+
+        function generateGrid() {
+            const days = parseInt(document.getElementById('daysInput').value);
+            const columns = Math.min(30, Math.max(1, parseInt(document.getElementById('columnsInput').value)));
+            const gridContainer = document.getElementById('gridContainer');
+            const rows = Math.ceil(days / columns);
+
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+            const itemSize = (190 / columns) + 'mm';
+
+            for (let i = 1; i <= days; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.textContent = i;
+                gridItem.style.width = itemSize;
+                gridItem.style.height = itemSize;
+                gridContainer.appendChild(gridItem);
+            }
+        }
+
+        function goToDayCounter() {
+            // Replace 'your-day-counter-url' with the actual URL of your day counter page
+            window.location.href = '/days-counter.html';
+        }
+
+        // Generate initial grid
+        generateGrid();
+
+        // Add event listeners to inputs for real-time updates
+        document.getElementById('daysInput').addEventListener('input', generateGrid);
+        document.getElementById('columnsInput').addEventListener('input', generateGrid);
+    </script>
+</body>
+</html>
